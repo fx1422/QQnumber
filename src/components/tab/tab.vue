@@ -30,13 +30,15 @@
 
   .tab
     display: flex
-    height: 49px
     font-size $font-size-medium
-    border-top 1px solid #eee !important;
+    border 1px solid #eee !important;
     position absolute
     bottom 0
     margin auto
     width 100%
+    max-width 640px
+    left 0
+    right:0
     .tab-item
       flex: 1
       text-align: center

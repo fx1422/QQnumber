@@ -33,6 +33,20 @@
                 <p class="msg">新手练习</p>
               </div>
             </li>
+            <li>
+              <div class="exchange-tab-icon"></div>
+              <div class="exchange-tab-msg">
+                <p class="title">模拟交易</p>
+                <p class="msg">新手练习</p>
+              </div>
+            </li>
+            <li>
+              <div class="exchange-tab-icon"></div>
+              <div class="exchange-tab-msg">
+                <p class="title">模拟交易</p>
+                <p class="msg">新手练习</p>
+              </div>
+            </li>
           </ul>
         </div>
         <div class="exchange-title">
@@ -41,15 +55,15 @@
         </div>
         <div class="exchange-list">
           <ul>
-            <li>
-              <div class="exchange-list-item">
+            <li v-for="item in typeFileList">
+              <div class="exchange-list-item" :style="{backgroundImage:'url('+item.img+')', backgroundSize: 'contain'}">
               </div>
               <div class="exchange-list-item">
-                <div>初级场</div>
-                <div>单注1手起，无返水</div>
+                <div>{{item.type}}</div>
+                <div>{{item.msg}}</div>
               </div>
               <div class="exchange-list-item">
-                <button></button>
+                <div class="btn"></div>
               </div>
             </li>
           </ul>
@@ -64,9 +78,16 @@
   import Scroll from 'base/scroll/scroll'
 
   export default {
-
+    data() {
+      return {
+        typeFileList: [{"type": "初级场", "msg": "单注一手，无反手", "img": require("./exchange-icon-1.png")}
+          , {"type": "中级场", "msg": "单手10手起，返水5%", "img": require("./exchange-icon-2.png")}
+          , {"type": "高级场", "msg": "单手50手起，返水6%", "img": require("./exchange-icon-3.png")}
+        ]
+      }
+    },
     created() {
-      this.$refs.scroll.refresh()
+      //this.$ref.scroll.refresh()
     },
     components: {
       Scroll
@@ -81,7 +102,12 @@
     position fixed
     width: 100%
     top: 0
-    bottom 49px
+    bottom calc(1.5rem + 11px)
+    max-width 640px
+    margin auto
+    left 0px
+    right 0
+    background-color $color-background-white
     .exchange-content
       height 100%
       overflow hidden
@@ -89,33 +115,34 @@
         padding 5px 10px
         .exchange-header
           width 100%
-          height 11rem
+          height 8.2rem
           background url("exchange-bg.png") center no-repeat
           background-size contain
           color $color-font-white
           .item-1
-            height 3rem
+            height 2rem
             width: 100%
-            line-height 4rem
+            line-height 2rem
             font-size $font-size-medium
             span:nth-child(1)
               float left
-              margin-left 5px
+              margin-left .5rem
             span:nth-child(2)
               float right
-              margin-right 5px
+              margin-right .5rem
           .item-2
             text-align center
             .title
-              height 3rem
+              height 2.4rem
               line-height 2rem
               font-size $font-size-medium-x
           .item-3
             position relative
+            margin-top 1rem
             span
               position absolute
               bottom 0.5rem
-              right 0.4rem
+              right 0.5rem
               font-size $font-size-medium
             .recharge
               text-align center
@@ -123,32 +150,33 @@
               border-radius: 25px
               margin auto
               background-color $color-font-white
-              height 2rem
-              line-height 2rem
-              margin-top .9rem
-              width: 6rem
+              height 1.3rem
+              line-height 1.3rem
+              width: 4rem
+              font-size .76rem
         .exchange-tab
           margin-top 10px
           ul
             width: 100%;
             display: flex;
             justify-content: space-between;
+            flex-wrap wrap
             li
               border-radius: 5px;
-              margin 0 10px
-              height 4rem
+              height 3rem
               border: 1px solid #eee;
               background: #fff;
-              flex: 1;
+              flex: 0 0 45%;
               display: flex;
               align-items center
+              margin 5px
               .exchange-tab-icon
                 width 30%
                 height 100%
                 background url("icon-simulator.png") center no-repeat
                 background-size contain
               .exchange-tab-msg
-                margin-left 1.5rem
+                margin-left 1rem
                 p
                 height 2rem
                 line-height 1.3rem
@@ -163,12 +191,13 @@
           p:nth-child(1)
             margin-top: 10px
             margin-left: 20px
+            line-height 1rem
             width: 100%
             color: #9c9c9c;
           p:nth-child(2)
             padding: 0 20px;
             text-align: justify;
-            line-height 1.4rem
+            line-height 1rem
             color: #9c9c9c;
             span
               color: #2a8ce5;
@@ -178,7 +207,7 @@
             li
               display flex
               align-items center
-              height 3.4rem
+              height 2.6rem
               margin-top: 10px;
               border: 1px solid #eee;
               background-color: #fff;
@@ -198,7 +227,7 @@
                 display flex
                 width 40vw
                 div
-                  line-height 1rem
+                  line-height 1.4rem
                   height 1.4rem
                 div:nth-child(1)
                   font-size $font-size-medium-x
@@ -207,13 +236,17 @@
                   color #9c9c9c
               .exchange-list-item:nth-child(3)
                 width 40vw
-                height 100%
-                button
+                height 55%
+                .btn
                   width: 100%
                   height 100%
                   border none
                   background url("exchange-btn.png") center center no-repeat
                   background-size contain
+
+  @media (min-width: 630px)
+    .exchange-header
+      height 9.4rem !important
 
 
 </style>

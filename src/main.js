@@ -9,6 +9,7 @@ import 'common/stylus/index.styl'
 //字体
 import 'common/font/iconfont.css'
 import 'common/font/iconfont.js'
+import 'base/api/rem'
 
 fastclick.attach(document.body)
 
