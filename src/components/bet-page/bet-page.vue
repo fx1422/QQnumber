@@ -6,9 +6,7 @@
           <div class="item-left">玩法介绍</div>
           <div class="item-mid">
             <Marquee :duration="600" :interval="2000">
-              <item v-for="i in listData" :content="i">
-                {{i}}
-              </item>
+              <marquee-data></marquee-data>
             </Marquee>
           </div>
           <div class="item-right">走势图</div>
@@ -62,9 +60,10 @@
           <div class="close-music"></div>
         </div>
         <div class="msg-m">
-          <div class="chips"></div>
-          <div class="chips"></div>
-          <div class="chips"></div>
+          <div class="chips" v-for="(item,index) in betNumber" @click="selectBetNumber(item,index)"
+               :class="{'chips-active':selectedNum}">
+          </div>
+
         </div>
         <div class="msg-r">
           <div class="close-bet"></div>
@@ -81,18 +80,27 @@
   import JustTips from 'components/just-tips/just-tips'
   import SelectResult from 'components/select-result/select-result'
   import BetAccount from 'components/bet-account/bet-account'
+  import MarqueeData from 'base/marquee-data/marquee-data'
 
   export default {
     data() {
       return {
-        listData: ['item1', 'item2', 'item3'],
-        selected: false
+        selectedNum: false,
+        selected: false,
+        betNumber: [10, 100, 1000]
+      }
+    },
+    methods: {
+      selectBetNumber(val,index) {
+        console.log(val,index)
+        this.selectedNum = true
       }
     },
     components: {
       JustTips,
       SelectResult,
-      BetAccount
+      BetAccount,
+      MarqueeData
     }
   }
 </script>
@@ -120,14 +128,14 @@
           line-height 7vh
           color #AFD0FF
           font-size 0.82rem
-          width:22vw
+          width: 22vw
           height 100%
           text-align center
         .item-right
           line-height 7vh
           color #AFD0FF
           font-size 0.82rem
-          width:22vw
+          width: 22vw
           height 100%
           text-align center
         .item-mid
@@ -271,6 +279,7 @@
         .chips
           width 33.3%
           height 100%
+          position relative
         .chips:nth-child(1)
           background url("img/chip-1.png") center no-repeat
           background-size contain
@@ -278,8 +287,11 @@
           background url("img/chip-2.png") center no-repeat
           background-size contain
         .chips:nth-child(3)
-          background url("img/chip-3.png")center no-repeat
+          background url("img/chip-3.png") center no-repeat
           background-size contain
+        .chips-active
+          transform: rotate(360deg) scale(1.2)
+
       .msg-r
         width: 21%
         height 100%

@@ -2,7 +2,7 @@
   <div class='bet-account'>
     <div class="balance">余额：666666</div>
     <div class="go-recharge">充值</div>
-    <div class="have-bet">
+    <div class="have-bet" v-show="betNumber">
       <p>已下注：50</p>
       <P>(手续费5元)</P>
     </div>
@@ -10,7 +10,13 @@
 </template>
 
 <script type="text/ecmascript-6">
-  export default {}
+  export default {
+    data (){
+      return {
+        betNumber:false
+      }
+    }
+  }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
