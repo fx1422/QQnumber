@@ -18,7 +18,7 @@
         </div>
         <div class="exchange-tab">
           <ul>
-            <li>
+            <li @click="selectBeting" :data="betId">
               <div class="exchange-tab-icon">
               </div>
               <div class="exchange-tab-msg">
@@ -71,7 +71,9 @@
 
       </div>
     </scroll>
+    <router-view></router-view>
   </div>
+
 </template>
 
 <script type="text/ecmascript-6">
@@ -83,11 +85,19 @@
         typeFileList: [{"type": "初级场", "msg": "单注一手，无反手", "img": require("./exchange-icon-1.png")}
           , {"type": "中级场", "msg": "单手10手起，返水5%", "img": require("./exchange-icon-2.png")}
           , {"type": "高级场", "msg": "单手50手起，返水6%", "img": require("./exchange-icon-3.png")}
-        ]
+        ],
+        betId:'001'
       }
     },
     created() {
       //this.$ref.scroll.refresh()
+    },
+    methods: {
+      selectBeting() {
+        this.$router.push({
+          path:`exchange/${this.betId}`
+        })
+      }
     },
     components: {
       Scroll
@@ -225,7 +235,8 @@
                 justify-content center
                 flex-direction column
                 display flex
-                width 40vw
+                width 50vw
+                padding-left 0.5rem
                 div
                   line-height 1.4rem
                   height 1.4rem

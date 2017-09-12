@@ -4,7 +4,7 @@ html {
   font-family: 'PingFang SC', 'STHeitiSC-Light', 'Helvetica-Light', arial, sans-serif, 'Droid Sans Fallback';
   user-select: none;
   -webkit-tap-highlight-color: transparent;
-  background: #f8f8f8;
+  background: #fff;
   color: #000;
 }
 html,
