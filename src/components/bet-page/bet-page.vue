@@ -60,8 +60,8 @@
           <div class="close-music"></div>
         </div>
         <div class="msg-m">
-          <div class="chips" v-for="(item,index) in betNumber" @click="selectBetNumber(item,index)"
-               :class="{'chips-active':selectedNum}">
+          <div class="chips" ref='chips' v-for="(item,index) in betNumber" @click="selectBetNumber(item,index)"
+               :class="{'chips-active':selectedNum===index}">
           </div>
 
         </div>
@@ -85,15 +85,28 @@
   export default {
     data() {
       return {
-        selectedNum: false,
+        selectedNum: null,
         selected: false,
-        betNumber: [10, 100, 1000]
+        betNumber: [10, 100, 1000],
+        popup: []
       }
     },
     methods: {
-      selectBetNumber(val,index) {
-        console.log(val,index)
-        this.selectedNum = true
+      selectBetNumber(val, index) {
+        this.selectedNum = index
+        const current = event.currentTarget
+        this.setStartPos(current)
+        console.log(this.popup)
+        const clone = current.cloneNode(true)
+        console.log(clone)
+        clone.style.width = "100%"
+        current.append(clone)
+
+      },
+      setStartPos(current) {
+        this.popup.x = current.offsetLeft
+        this.popup.y = current.offsetTop
+
       }
     },
     components: {
