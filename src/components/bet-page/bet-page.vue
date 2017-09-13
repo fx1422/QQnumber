@@ -13,13 +13,10 @@
         </div>
         <div class="content-mid">
           <div class="mid-l">
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
+            <div class="item"  @click="selectedType(item)" v-for="item in gameType"></div>
           </div>
           <div class="mid-m">
-            <div class="item"></div>
+            <div class="item" @click="selectedType"></div>
             <div class="item">
               <div class="top">
                 <div class="list">
@@ -41,18 +38,18 @@
                 <div class="history-list">12</div>
               </div>
             </div>
-            <div class="item"></div>
+            <div class="item" @click="selectedType"></div>
           </div>
           <div class="mid-r">
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
-            <div class="item"></div>
+            <div class="item" @click="selectedType"></div>
+            <div class="item" @click="selectedType"></div>
+            <div class="item" @click="selectedType"></div>
+            <div class="item" @click="selectedType"></div>
           </div>
         </div>
         <div class="content-bot">
-          <just-tips v-if="selected"></just-tips>
-          <select-result></select-result>
+          <just-tips v-if="!numberType.length"></just-tips>
+          <select-result v-if="numberType.length" :numberType="numberType"></select-result>
         </div>
       </div>
       <div class="bet-msg">
@@ -60,7 +57,7 @@
           <div class="close-music"></div>
         </div>
         <div class="msg-m">
-          <div class="chips" ref='chips' v-for="(item,index) in betNumber" @click="selectBetNumber(item,index)"
+          <div class="chips" :ref="item.name" v-for="(item,index) in betNumber" @click="selectBetNumber(item,index)"
                :class="{'chips-active':selectedNum===index}">
           </div>
 
@@ -70,7 +67,7 @@
         </div>
       </div>
       <div class="bet-account">
-        <bet-account></bet-account>
+        <bet-account :betNumber="numberType"></bet-account>
       </div>
     </div>
   </transition>
@@ -81,33 +78,78 @@
   import SelectResult from 'components/select-result/select-result'
   import BetAccount from 'components/bet-account/bet-account'
   import MarqueeData from 'base/marquee-data/marquee-data'
+  import animations from 'create-keyframe-animation'
 
   export default {
     data() {
       return {
+        gameType:[{type:[0,13],rate:3},{type:['true',0],rate:3},{type:[0,0],rate:3},{type:[1,14],rate:3}],
+        numberType:'',
         selectedNum: null,
-        selected: false,
-        betNumber: [10, 100, 1000],
-        popup: []
+        betNumber: [{name: 'chips10', value: '10'}, {name: 'chips100', value: '100'}, {
+          name: 'chips1000',
+          value: '1000'
+        }],
+        startPos: {}
       }
     },
     methods: {
       selectBetNumber(val, index) {
         this.selectedNum = index
         const current = event.currentTarget
-        this.setStartPos(current)
-        console.log(this.popup)
-        const clone = current.cloneNode(true)
-        console.log(clone)
-        clone.style.width = "100%"
-        current.append(clone)
+        const obj = current.getBoundingClientRect()
+        this.startPos.obj = current
+        this.startPos.x = obj.left
+        this.startPos.y = obj.top
+        this.startPos.width = obj.width
+        this.startPos.height = obj.height
 
       },
-      setStartPos(current) {
-        this.popup.x = current.offsetLeft
-        this.popup.y = current.offsetTop
+      selectedType(el, done) {
+        if(!('obj' in this.startPos)){
+          return
+        }
+        this.numberType = el.type
+        const {x, y, scale} = this._getPosAndScale()
+        let animation = {
+          0: {
+            transform: `translate3d(0,0,0) scale(1)`
+          },
+          60: {
+            transform: `translate3d(0,0,0) scale(1.1)`
+          },
+          100: {
+            transform: `translate3d(${x}px,${y}px,0) scale(1)`
+          }
+        }
+        animations.registerAnimation({
+          name: 'move',
+          animation,
+          presets: {
+            duration: 400,
+            easing: 'linear'
+          }
+        })
+        animations.runAnimation(this.startPos.obj, 'move', function () {
 
-      }
+        })
+      },
+      _getPosAndScale() {
+        const current = event.currentTarget
+        const obj = current.getBoundingClientRect()
+        const paddingLeft = 10
+        const scale = 0.8
+        console.log(obj)
+        const x = -(this.startPos.x - obj.left - ((obj.width - this.startPos.width) / 2))
+        const y = -(this.startPos.y - obj.top - ((obj.height - this.startPos.height) / 2))
+        console.log(x, y)
+        /*const x = -37
+        const y = -454*/
+        return {
+          x, y, scale
+        }
+      },
+
     },
     components: {
       JustTips,
@@ -185,7 +227,7 @@
             background url("img/grid-3.png") center no-repeat
             background-size contain
           .item:nth-child(4)
-            background url("img/grid-4.png") center no-repeat
+            background url("img/grid-1.png") center no-repeat
             background-size contain
         .mid-m
           height 100%

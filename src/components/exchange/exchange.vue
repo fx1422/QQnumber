@@ -26,25 +26,25 @@
                 <p class="msg">新手练习</p>
               </div>
             </li>
-            <li>
+            <li @click="redPacket">
               <div class="exchange-tab-icon"></div>
               <div class="exchange-tab-msg">
-                <p class="title">模拟交易</p>
-                <p class="msg">新手练习</p>
+                <p class="title">红包活动</p>
+                <p class="msg">可领取1个</p>
+              </div>
+            </li>
+            <li @click="rank">
+              <div class="exchange-tab-icon"></div>
+              <div class="exchange-tab-msg">
+                <p class="title">排行榜</p>
+                <p class="msg">每小时更新</p>
               </div>
             </li>
             <li>
               <div class="exchange-tab-icon"></div>
               <div class="exchange-tab-msg">
-                <p class="title">模拟交易</p>
-                <p class="msg">新手练习</p>
-              </div>
-            </li>
-            <li>
-              <div class="exchange-tab-icon"></div>
-              <div class="exchange-tab-msg">
-                <p class="title">模拟交易</p>
-                <p class="msg">新手练习</p>
+                <p class="title">新手教程</p>
+                <p class="msg">一分钟上手</p>
               </div>
             </li>
           </ul>
@@ -86,7 +86,7 @@
           , {"type": "中级场", "msg": "单手10手起，返水5%", "img": require("./exchange-icon-2.png")}
           , {"type": "高级场", "msg": "单手50手起，返水6%", "img": require("./exchange-icon-3.png")}
         ],
-        betId:'001'
+        betId: '001'
       }
     },
     created() {
@@ -95,7 +95,17 @@
     methods: {
       selectBeting() {
         this.$router.push({
-          path:`exchange/${this.betId}`
+          path: `exchange/${this.betId}`
+        })
+      },
+      redPacket(){
+        this.$router.push({
+          path: '/redPacket'
+        })
+      },
+      rank(){
+        this.$router.push({
+          path: '/rank'
         })
       }
     },
@@ -183,8 +193,6 @@
               .exchange-tab-icon
                 width 30%
                 height 100%
-                background url("icon-simulator.png") center no-repeat
-                background-size contain
               .exchange-tab-msg
                 margin-left 1rem
                 p
@@ -195,6 +203,22 @@
                 .msg
                   color #9c9c9c
                   font-size $font-size-medium
+            li:nth-child(1)
+              .exchange-tab-icon
+                background url("icon-simulator.png") center no-repeat
+                background-size contain
+            li:nth-child(2)
+              .exchange-tab-icon
+                background url("icon4.png") center no-repeat
+                background-size contain
+            li:nth-child(3)
+              .exchange-tab-icon
+                background url("icon2.png") center no-repeat
+                background-size contain
+            li:nth-child(4)
+              .exchange-tab-icon
+                background url("rookie_guide.png") center no-repeat
+                background-size contain
         .exchange-title
           padding-right: 10px;
           font-size $font-size-medium

@@ -1,6 +1,6 @@
 <template>
   <div class='tab'>
-    <router-link tag="div" class="tab-item" to="/exchange">
+    <router-link tag="div" class="tab-item active" to="/exchange">
       <svg class="icon" aria-hidden="true">
         <use xlink:href="#icon-jiaoyi"></use>
       </svg>
