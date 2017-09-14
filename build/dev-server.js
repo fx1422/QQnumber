@@ -14,6 +14,7 @@ var webpackConfig = (process.env.NODE_ENV === 'testing' || process.env.NODE_ENV 
   ? require('./webpack.prod.conf')
   : require('./webpack.dev.conf')
 
+
 // default port where dev server listens for incoming traffic
 var port = process.env.PORT || config.dev.port
 // automatically open browser, if not set will be false
@@ -23,23 +24,6 @@ var autoOpenBrowser = !!config.dev.autoOpenBrowser
 var proxyTable = config.dev.proxyTable
 
 var app = express()
-var apiRoutes = express.Router()
-
-apiRoutes.get('/getData', function (req, res) {
-  var url = 'https://mma.qq.com/mqqactivity/cgi/starmap/get_online'
-  axios.get(url, {
-    headers: {
-      referer: 'http://im.qq.com/album/v/'
-    },
-    params: req.query
-  }).then((response) => {
-    res.json(response.data)
-  }).catch((e) => {
-    console.log(e)
-  })
-})
-
-
 var compiler = webpack(webpackConfig)
 
 var devMiddleware = require('webpack-dev-middleware')(compiler, {

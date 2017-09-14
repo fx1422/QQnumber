@@ -6,7 +6,6 @@ import fastclick from 'fastclick'
 import VueLazyLoad from 'vue-lazyload'
 import marquee from 'vue-marquee'
 
-
 import 'common/stylus/index.styl'
 //字体
 import 'common/font/iconfont.css'

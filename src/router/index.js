@@ -6,6 +6,7 @@ import Mine from 'components/mine/mine'
 import BetPage from 'components/bet-page/bet-page'
 import RedpacketActive from 'components/redpacket-active/redpacket-active'
 import Rank from 'components/rank/rank'
+import Rename from 'components/rename/rename'
 
 Vue.use(Router)
 
@@ -20,16 +21,16 @@ export default new Router({
       component: Exchange,
       children: [
         {
-          path:':id',
-          component:BetPage
+          path: ':id',
+          component: BetPage
         },
         {
-          path:'/redPacket',
-          component:RedpacketActive
+          path: '/redPacket',
+          component: RedpacketActive
         },
         {
-          path:'/rank',
-          component:Rank
+          path: '/rank',
+          component: Rank
         }
       ]
     },
@@ -39,7 +40,13 @@ export default new Router({
     },
     {
       path: '/mine',
-      component: Mine
+      component: Mine,
+      children: [
+        {
+          path: '/rename',
+          component: Rename
+        }
+      ]
     }
   ]
 })
