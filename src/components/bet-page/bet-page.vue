@@ -13,7 +13,7 @@
         </div>
         <div class="content-mid">
           <div class="mid-l">
-            <div class="item"  @click="selectedType(item)" v-for="item in gameType"></div>
+            <div class="item" @click="selectedType(item)" v-for="item in gameType"></div>
           </div>
           <div class="mid-m">
             <div class="item" @click="selectedType"></div>
@@ -79,34 +79,56 @@
   import BetAccount from 'components/bet-account/bet-account'
   import MarqueeData from 'base/marquee-data/marquee-data'
   import animations from 'create-keyframe-animation'
+  import bg from 'components/bet-page/img/chip-1.png'
 
   export default {
     data() {
       return {
-        gameType:[{type:[0,13],rate:3},{type:['true',0],rate:3},{type:[0,0],rate:3},{type:[1,14],rate:3}],
-        numberType:'',
+        gameType: [{type: [0, 13], rate: 3}, {type: ['true', 0], rate: 3}, {type: [0, 0], rate: 3}, {
+          type: [1, 14],
+          rate: 3
+        }],
+        numberType: '',
         selectedNum: null,
         betNumber: [{name: 'chips10', value: '10'}, {name: 'chips100', value: '100'}, {
           name: 'chips1000',
           value: '1000'
         }],
-        startPos: {}
+        startPos: {},
+        clone: ''
       }
     },
     methods: {
       selectBetNumber(val, index) {
+        const el = document.getElementById('clone')
+        const left = 33.3 * index
+        if (el) {
+          el.parentNode.removeChild(el);
+        }
         this.selectedNum = index
         const current = event.currentTarget
-        const obj = current.getBoundingClientRect()
-        this.startPos.obj = current
+        this.clone = current.cloneNode(true)
+        this.clone.style.width = '33.3%'
+        this.clone.style.left = left + '%'
+        this.clone.style.position = 'absolute'
+        this.clone.style.backgroundImage = `url("${bg}")`
+        this.clone.style.backgroundSize = 'contain'
+        this.clone.style.backgroundPosition = 'center'
+        this.clone.style.backgroundRepeat = 'no-repeat'
+        this.clone.style.zIndex = '999'
+        this.clone.style.display = 'block'
+        this.clone.setAttribute('id', 'clone')
+        current.parentNode.append(this.clone)
+        const obj = clone.getBoundingClientRect()
         this.startPos.x = obj.left
         this.startPos.y = obj.top
         this.startPos.width = obj.width
         this.startPos.height = obj.height
+        this.startPos.obj = this.clone
 
       },
       selectedType(el, done) {
-        if(!('obj' in this.startPos)){
+        if (this.clone.length === 0) {
           return
         }
         this.numberType = el.type
@@ -130,21 +152,18 @@
             easing: 'linear'
           }
         })
-        animations.runAnimation(this.startPos.obj, 'move', function () {
-
+        const _this = this
+        animations.runAnimation(this.clone, 'move', function () {
+          _this.clone.style.display = 'none'
         })
       },
       _getPosAndScale() {
         const current = event.currentTarget
         const obj = current.getBoundingClientRect()
-        const paddingLeft = 10
         const scale = 0.8
         console.log(obj)
         const x = -(this.startPos.x - obj.left - ((obj.width - this.startPos.width) / 2))
         const y = -(this.startPos.y - obj.top - ((obj.height - this.startPos.height) / 2))
-        console.log(x, y)
-        /*const x = -37
-        const y = -454*/
         return {
           x, y, scale
         }
@@ -331,6 +350,7 @@
         height 100%
         display flex
         justify-content space-between
+        position relative
         .chips
           width 33.3%
           height 100%
