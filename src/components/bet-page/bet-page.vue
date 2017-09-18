@@ -13,10 +13,23 @@
         </div>
         <div class="content-mid">
           <div class="mid-l">
-            <div class="item" @click="selectedType(item)" v-for="item in gameType"></div>
+            <div class="item" @click="selectedType($event,'bd','3')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
+            <div class="item" @click="selectedType($event,'b','2')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
+            <div class="item" @click="selectedType($event,'d','2')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
+            <div class="item" @click="selectedType($event,'bs','4')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
           </div>
           <div class="mid-m">
-            <div class="item" @click="selectedType"></div>
+            <div class="item" @click="selectedType($event,'sss','60')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
             <div class="item">
               <div class="top">
                 <div class="list">
@@ -38,18 +51,28 @@
                 <div class="history-list">12</div>
               </div>
             </div>
-            <div class="item" @click="selectedType"></div>
+            <div class="item" @click="selectedType($event,'abc','60')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
           </div>
           <div class="mid-r">
-            <div class="item" @click="selectedType"></div>
-            <div class="item" @click="selectedType"></div>
-            <div class="item" @click="selectedType"></div>
-            <div class="item" @click="selectedType"></div>
+            <div class="item" @click="selectedType($event,'ss','3')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
+            <div class="item" @click="selectedType($event,'s','2')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
+            <div class="item" @click="selectedType($event,'s','2')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
+            <div class="item" @click="selectedType($event,'sd','4')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
           </div>
         </div>
         <div class="content-bot">
           <just-tips v-if="!numberType.length"></just-tips>
-          <select-result v-if="numberType.length" :numberType="numberType"></select-result>
+          <select-result v-if="numberType.length" :betMsg="betMsg"></select-result>
         </div>
       </div>
       <div class="bet-msg">
@@ -63,7 +86,7 @@
 
         </div>
         <div class="msg-r">
-          <div class="close-bet"></div>
+          <div class="close-bet" @click="resetBet"></div>
         </div>
       </div>
       <div class="bet-account">
@@ -79,69 +102,68 @@
   import BetAccount from 'components/bet-account/bet-account'
   import MarqueeData from 'base/marquee-data/marquee-data'
   import animations from 'create-keyframe-animation'
-  import bg from 'components/bet-page/img/chip-1.png'
+  import bg0 from 'components/bet-page/img/chip-1.png'
+  import bg1 from 'components/bet-page/img/chip-2.png'
+  import bg2 from 'components/bet-page/img/chip-3.png'
+  import bgF0 from 'components/bet-page/img/chip-1-L.png'
+  import bgF1 from 'components/bet-page/img/chip-2-L.png'
+  import bgF2 from 'components/bet-page/img/chip-3-L.png'
 
   export default {
     data() {
       return {
-        gameType: [{type: [0, 13], rate: 3}, {type: ['true', 0], rate: 3}, {type: [0, 0], rate: 3}, {
-          type: [1, 14],
-          rate: 3
-        }],
         numberType: '',
         selectedNum: null,
-        betNumber: [{name: 'chips10', value: '10'}, {name: 'chips100', value: '100'}, {
-          name: 'chips1000',
-          value: '1000'
+        betNumber: [{name: 'chips10', value: 10, bg: `${bg0}`}, {name: 'chips100', value: 50, bg: `${bg1}`}, {
+          name: 'chips100',
+          value: 100,
+          bg: `${bg2}`
         }],
         startPos: {},
-        clone: ''
+        clone: '',
+        currentRate: '',
+        showFlow: false,
+        Fbg: [`${bgF0}`, `${bgF1}`, `${bgF2}`],
+        FFbg: '',
+        betMsg: []
       }
     },
     methods: {
       selectBetNumber(val, index) {
         const el = document.getElementById('clone')
         const left = 33.3 * index
+        const current = event.currentTarget
         if (el) {
           el.parentNode.removeChild(el);
         }
-        this.selectedNum = index
-        const current = event.currentTarget
+        this.currentRate = val.value//当前选中注额
+        this.FFbg = this.Fbg[index]//投注浮动背景
+        this.selectedNum = index //设置选中注额样式
+        //clone移动的注额
         this.clone = current.cloneNode(true)
-        this.clone.style.width = '33.3%'
-        this.clone.style.left = left + '%'
-        this.clone.style.position = 'absolute'
-        this.clone.style.backgroundImage = `url("${bg}")`
-        this.clone.style.backgroundSize = 'contain'
-        this.clone.style.backgroundPosition = 'center'
-        this.clone.style.backgroundRepeat = 'no-repeat'
-        this.clone.style.zIndex = '999'
-        this.clone.style.display = 'block'
-        this.clone.setAttribute('id', 'clone')
+        this.setCloneStyle(this.clone, left, index)
         current.parentNode.append(this.clone)
         const obj = clone.getBoundingClientRect()
         this.startPos.x = obj.left
         this.startPos.y = obj.top
         this.startPos.width = obj.width
         this.startPos.height = obj.height
-        this.startPos.obj = this.clone
-
       },
-      selectedType(el, done) {
+      selectedType(el, type, num) {
+        const current = event.currentTarget
         if (this.clone.length === 0) {
           return
         }
-        this.numberType = el.type
+        //设置投注详情
+        this.getBetMsg(el, type, num)
         const {x, y, scale} = this._getPosAndScale()
+        //投注动画
         let animation = {
-          0: {
-            transform: `translate3d(0,0,0) scale(1)`
-          },
-          60: {
-            transform: `translate3d(0,0,0) scale(1.1)`
+          99: {
+            transform: `translate3d(${x}px,${y}px,0) scale(1)`
           },
           100: {
-            transform: `translate3d(${x}px,${y}px,0) scale(1)`
+            transform: `translate3d(0px,0px,0) scale(1)`
           }
         }
         animations.registerAnimation({
@@ -149,27 +171,65 @@
           animation,
           presets: {
             duration: 400,
-            easing: 'linear'
+            easing: 'linear',
+            resetWhenDone: true
           }
         })
         const _this = this
         animations.runAnimation(this.clone, 'move', function () {
-          _this.clone.style.display = 'none'
+          //设置投注数额
+          current.children[0].innerText = Number(current.children[0].innerText) + Number(_this.currentRate)
+          current.children[0].style.display = 'block'
+          current.children[0].style.background = `url("${_this.FFbg}") center no-repeat`
+          current.children[0].style.backgroundSize = "contain"
+
         })
       },
       _getPosAndScale() {
         const current = event.currentTarget
         const obj = current.getBoundingClientRect()
         const scale = 0.8
-        console.log(obj)
         const x = -(this.startPos.x - obj.left - ((obj.width - this.startPos.width) / 2))
         const y = -(this.startPos.y - obj.top - ((obj.height - this.startPos.height) / 2))
         return {
           x, y, scale
         }
       },
+      setCloneStyle(el, left, index) {
+        el.style.width = '33.3%'
+        el.style.left = left + '%'
+        el.style.position = 'absolute'
+        el.style.backgroundImage = `url("${this.betNumber[index].bg}")`
+        el.style.backgroundSize = 'contain'
+        el.style.backgroundPosition = 'center'
+        el.style.backgroundRepeat = 'no-repeat'
+        el.style.zIndex = '999'
+        el.style.display = 'block'
+        el.setAttribute('id', 'clone')
+      },
+      getBetMsg(el, type, num) {
+        this.numberType = el.type
+        const o = {
+          rate: this.currentRate,
+          type: type,
+          gain: num
+        }
+        this.betMsg.push(o)
+        //console.log(JSON.stringify(this.betMsg))
+      },
+      resetBet() {
+        // console.log(this.clone)
+       const obj = document.getElementsByClassName('item-flow')
+        for (const value of obj) {
+           value.style.display = 'none'
+        }
+        this.$refs.itemFlow.innerText = ''
+        this.betMsg = []
 
+      }
     },
+
+
     components: {
       JustTips,
       SelectResult,
@@ -236,6 +296,7 @@
             width: 100%
             height 24%
             background-color white
+            position relative
           .item:nth-child(1)
             background url("img/grid-4.png") center no-repeat
             background-size contain
@@ -248,15 +309,50 @@
           .item:nth-child(4)
             background url("img/grid-1.png") center no-repeat
             background-size contain
+          .item-flow
+            position absolute
+            left 0
+            right 0px
+            margin auto
+            top 0
+            bottom 0
+            height 80%
+            width 80%
+            background-size contain
+            display none
+            color white
+            text-align center
+            line-height 9.5vh
+            font-size $font-size-large
+            font-weight 600
+            letter-spacing 1px
         .mid-m
           height 100%
           width: 40%
           display flex
           flex-direction column
           justify-content space-between
+          .item-flow
+            position absolute
+            left 0
+            right 0px
+            margin auto
+            top 0
+            bottom 0
+            height 80%
+            width 80%
+            background-size contain
+            display none
+            color white
+            text-align center
+            line-height 9.5vh
+            font-size $font-size-large
+            font-weight 600
+            letter-spacing 1px
           .item
             width: 100%
             height 24%
+            position relative
           .item:nth-child(1)
             height 24%
             background url("img/grid-5.png") center no-repeat
@@ -310,6 +406,23 @@
           display flex
           flex-direction column
           justify-content space-between
+          .item-flow
+            position absolute
+            left 0
+            right 0px
+            margin auto
+            top 0
+            bottom 0
+            height 80%
+            width 80%
+            background-size contain
+            display none
+            color white
+            text-align center
+            line-height 9.5vh
+            font-size $font-size-large
+            font-weight 600
+            letter-spacing 1px
           .item:nth-child(1)
             background url("img/grid-7.png") center no-repeat
             background-size contain
@@ -326,6 +439,7 @@
             width: 100%
             height 24%
             background-color white
+            position relative
       .content-bot
         height 13vh
 

@@ -1,8 +1,7 @@
 <template>
   <div class='select-result'>
     <div>
-      <div v-for="(item,index) in items"
-           :class="['item',{'active':index%2 ==numberType[0]&&index>=numberType[1] }]">{{item}}
+      <div v-for="(item,index) in items" class="numItem" ref="numberItem">{{item}}
       </div>
     </div>
   </div>
@@ -11,18 +10,32 @@
 <script type="text/ecmascript-6">
   export default {
     props: {
-      numberType: ''
+      betMsg: ''
     },
     data() {
       return {
         items: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27],
         isDouble: 3,
-        isBig: false
+        isBig: false,
+        dataM: this.betMsg
       }
     },
-    created(){
+    created() {
+
+
     },
-    computed: {}
+    computed: {},
+    watch: {
+      betMsg: {
+        handler(newValue) {
+          this.dataM = newValue
+          const data = this.dataM
+          for (let i = 0; i < data.length; i++) {
+            console.log(data[i].type)
+          }
+        }
+      }
+    }
   }
 </script>
 
@@ -43,7 +56,7 @@
       flex-wrap wrap
       justify-content: center
       align-items: center;
-      .item
+      .numItem
         margin 0.32rem .1rem
         font-size 0.72rem
         height: 1.1rem;
