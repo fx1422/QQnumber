@@ -8,10 +8,10 @@
         </div>
         <div class="item" @click="settingName">
           <p>姓名</p>
-          <p>你好 ></p>
+          <p>{{name}} ></p>
         </div>
         <br>
-        <div class="item">
+        <div class="item" @click="recharge">
           <p>充值</p>
           <p>余额：0.00元 ></p>
         </div>
@@ -52,11 +52,26 @@
   import Scroll from 'base/scroll/scroll'
 
   export default {
+    data() {
+      return {
+        name: ''
+      }
+    },
+    created() {
+      this.init()
+    },
     methods: {
+      init() {
+        const name = localStorage.username
+        this.name = name
+      },
       settingName() {
         this.$router.push({
           path: '/rename'
         })
+      },
+      recharge(){
+
       }
     },
     components: {

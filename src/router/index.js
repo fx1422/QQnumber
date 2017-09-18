@@ -44,9 +44,13 @@ export default new Router({
       children: [
         {
           path: '/rename',
-          component: Rename
+          component: Rename,
+          meta: {
+            requireAuth: true
+          }
         }
       ]
     }
   ]
 })
+
