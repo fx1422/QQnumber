@@ -31,16 +31,33 @@
               <div class="item-flow" ref="itemFlow"></div>
             </div>
             <div class="item">
-              <div class="top">
+              <div ref="cutP" v-show="cutPeriod" class="top">
                 <div class="list">
                   <p>即将开奖期号</p>
                   <p>20170214-0823</p>
                 </div>
-                <div class="list">
-                  5
+                <div ref="sencondTime" class="list">
+                  {{cutDownTime}}
                 </div>
+                <div ref="openState" class="list">
+                  下单中
+                </div>
+              </div>
+              <div ref="openP" v-show="openPeriod" class="top openResult">
                 <div class="list">
-                  开奖中
+                  <p>QQ在线人数</p>
+                  <p>55225525</p>
+                </div>
+                <div class="list num">
+                  <span ref="num1">5</span>
+                  <span ref="num2">+</span>
+                  <span ref="num3">8</span>
+                  <span ref="num4">+</span>
+                  <span ref="num5">2</span>
+                  <span ref="num6">=</span>
+                </div>
+                <div ref="sum" class="sum">
+                  15
                 </div>
               </div>
               <div class="bot">
@@ -56,23 +73,23 @@
             </div>
           </div>
           <div class="mid-r">
-            <div class="item" @click="selectedType($event,'ss','3')">
+            <div class="item" @click="selectedType($event,'ls','3')">
+              <div class="item-flow" ref="itemFlow"></div>
+            </div>
+            <div class="item" @click="selectedType($event,'l','2')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
             <div class="item" @click="selectedType($event,'s','2')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
-            <div class="item" @click="selectedType($event,'s','2')">
-              <div class="item-flow" ref="itemFlow"></div>
-            </div>
-            <div class="item" @click="selectedType($event,'sd','4')">
+            <div class="item" @click="selectedType($event,'ld','4')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
           </div>
         </div>
         <div class="content-bot">
           <just-tips v-if="!numberType.length"></just-tips>
-          <select-result v-if="numberType.length" :betMsg="betMsg"></select-result>
+          <select-result v-if="numberType.length" :showMsg="showMsg"></select-result>
         </div>
       </div>
       <div class="bet-msg">
@@ -90,7 +107,7 @@
         </div>
       </div>
       <div class="bet-account">
-        <bet-account :betNumber="numberType"></bet-account>
+        <bet-account></bet-account>
       </div>
     </div>
   </transition>
@@ -125,7 +142,11 @@
         showFlow: false,
         Fbg: [`${bgF0}`, `${bgF1}`, `${bgF2}`],
         FFbg: '',
-        betMsg: []
+        betMsg: [],
+        showMsg: null,
+        cutDownTime: '',
+        cutPeriod: true,
+        openPeriod: false
       }
     },
     methods: {
@@ -154,6 +175,7 @@
         if (this.clone.length === 0) {
           return
         }
+        this.showMsg = type
         //设置投注详情
         this.getBetMsg(el, type, num)
         const {x, y, scale} = this._getPosAndScale()
@@ -218,18 +240,293 @@
         //console.log(JSON.stringify(this.betMsg))
       },
       resetBet() {
-        // console.log(this.clone)
-       const obj = document.getElementsByClassName('item-flow')
+        const obj = document.getElementsByClassName('item-flow')
+        const list = document.getElementsByClassName('numItem')
+        console.log(list)
         for (const value of obj) {
-           value.style.display = 'none'
+          value.style.display = 'none'
+        }
+        for (const value of list) {
+          value.setAttribute('class', 'numItem')
         }
         this.$refs.itemFlow.innerText = ''
         this.betMsg = []
+        this.showMsg = ''
+        this.numberType = ''
+      },
+      cutTimeDown() {
+        if (this.cutDownTime === 0) {
+          this.$refs.openState.innerText = '开奖中'
+          this.rate(this.$refs.cutP)
+          return
+        }
+        this.cutDownTime--
+        const animation = {
+          0: {
+            transform: `scale(3)`
+          },
+          50: {
+            transform: `scale(1.8)`
+          },
+          100: {
+            transform: `scale(1)`
+          }
+        }
+        animations.registerAnimation({
+          name: 'move',
+          animation,
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        if (this.cutDownTime < 10 && this.cutDownTime >= 0) {
+          this.$refs.openState.innerText = '等待开奖'
+          animations.runAnimation(this.$refs.sencondTime, 'move')
+          this.$refs.sencondTime.style.color = 'red'
+        }
 
-      }
-    },
+      },
+      rate(obj) {
+        const animation = {
+          0: {
+            transform: `rotateY(0deg)`
+          },
+          50: {
+            transform: `rotateY(45deg)`
+          },
+          100: {
+            transform: `rotateY(90deg)`
+          }
+        }
+        animations.registerAnimation({
+          name: 'rate',
+          animation,
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        animations.runAnimation(obj, 'rate', function () {
+          _this.cutPeriod = false
+          _this.openPeriod = true
+          _this.moveNumb()
+        })
+      },
+      moveNumb() {
+        const num1 = this.$refs.num1, num2 = this.$refs.num2, num3 = this.$refs.num3, num4 = this.$refs.num4,
+          num5 = this.$refs.num5, num6 = this.$refs.num6
+        animations.registerAnimation({
+          name: 'rate',
+          animation: {
+            0: {
+              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(0deg)`
+            },
+            100: {
+              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        num1.style.visibility = 'visible'
+        animations.runAnimation(num1, 'rate', function () {
+          num2.style.visibility = 'visible'
+          _this.moveNumb2()
+        })
+      },
+      moveNumb2() {
+        const num1 = this.$refs.num1, num2 = this.$refs.num2, num3 = this.$refs.num3, num4 = this.$refs.num4,
+          num5 = this.$refs.num5, num6 = this.$refs.num6
+        animations.registerAnimation({
+          name: 'rate2',
+          animation: {
+            0: {
+              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+            },
+            100: {
+              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        animations.runAnimation(num2, 'rate2', function () {
+          num3.style.visibility = 'visible'
+          _this.moveNumb3()
+        })
+      },
+      moveNumb3() {
+        const num1 = this.$refs.num1, num2 = this.$refs.num2, num3 = this.$refs.num3, num4 = this.$refs.num4,
+          num5 = this.$refs.num5, num6 = this.$refs.num6
+        animations.registerAnimation({
+          name: 'rate2',
+          animation: {
+            0: {
+              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+            },
+            100: {
+              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        animations.runAnimation(num3, 'rate2', function () {
+          num4.style.visibility = 'visible'
+          _this.moveNumb4()
+        })
+      },
+      moveNumb4() {
+        const num1 = this.$refs.num1, num2 = this.$refs.num2, num3 = this.$refs.num3, num4 = this.$refs.num4,
+          num5 = this.$refs.num5, num6 = this.$refs.num6
+        animations.registerAnimation({
+          name: 'rate2',
+          animation: {
+            0: {
+              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+            },
+            100: {
+              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        animations.runAnimation(num4, 'rate2', function () {
+          num5.style.visibility = 'visible'
+          _this.moveNumb5()
+        })
+      },
+      moveNumb5() {
+        const num1 = this.$refs.num1, num2 = this.$refs.num2, num3 = this.$refs.num3, num4 = this.$refs.num4,
+          num5 = this.$refs.num5, num6 = this.$refs.num6
+        animations.registerAnimation({
+          name: 'rate2',
+          animation: {
+            0: {
+              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+            },
+            100: {
+              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        animations.runAnimation(num5, 'rate2', function () {
+          num6.style.visibility = 'visible'
+          _this.moveNumb6()
+        })
+      },
+      moveNumb6() {
+        const num1 = this.$refs.num1, num2 = this.$refs.num2, num3 = this.$refs.num3, num4 = this.$refs.num4,
+          num5 = this.$refs.num5, num6 = this.$refs.num6
+        animations.registerAnimation({
+          name: 'rate2',
+          animation: {
+            0: {
+              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+            },
+            100: {
+              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        animations.runAnimation(num6, 'rate2', function () {
+          _this.$refs.sum.style.display = 'block'
+          _this.sumAnimation()
+        })
+      },
+      sumAnimation() {
+        animations.registerAnimation({
+          name: 'rates',
+          animation: {
+            0: {
+              transform: `scale(2)`
+            },
+            25: {
+              transform: `scale(1)`
+            },
+            50: {
+              transform: `scale(2)`
+            },
+            100: {
+              transform: `scale(1)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: true
+          }
+        })
+        const _this = this
+        animations.runAnimation(_this.$refs.sum, 'rates', function () {
+          const animation = {
+            0: {
+              transform: `rotateY(0deg)`
+            },
+            50: {
+              transform: `rotateY(45deg)`
+            },
+            100: {
+              transform: `rotateY(90deg)`
+            }
+          }
+          animations.registerAnimation({
+            name: 'rate',
+            animation,
+            presets: {
+              duration: 400,
+              easing: 'linear',
+              resetWhenDone: true
+            }
+          })
+          _this.cutDownTime = 15
+          animations.runAnimation(_this.$refs.openP, 'rate', function () {
+            _this.cutPeriod = true
+            _this.openPeriod = false
+          })
+        })
+      },
 
-
+    }
+    ,
+    mounted() {
+      this.cutDownTime = 15
+      setInterval(this.cutTimeDown, 1000)
+    }
+    ,
     components: {
       JustTips,
       SelectResult,
@@ -374,13 +671,38 @@
                 font-size 0.5rem
               .list:nth-child(2)
                 height 38%
-                font-size 1.5rem
+                font-size 1.7rem
                 display flex
                 flex-direction column
                 justify-content center
               .list:nth-child(3)
                 height 23%
                 font-size 0.5rem
+            .openResult
+              background url("img/center2.png") center no-repeat
+              background-size contain
+              .list
+                padding-top 0.5rem
+                p
+                  color black
+                  font-weight 700 !important
+                  font-size 0.65rem !important
+              .num
+                display flex
+                flex-direction row !important
+                font-size 0.88rem !important
+                height 23% !important
+                span
+                  font-weight 700 !important
+                  color black
+                  letter-spacing 1px
+                  visibility hidden
+              .sum
+                text-align center
+                color white
+                font-weight 800
+                font-size 2rem
+                display none
             .bot
               height 12%
               display flex
