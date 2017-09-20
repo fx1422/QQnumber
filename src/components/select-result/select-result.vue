@@ -8,6 +8,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import axios from 'axios'
   export default {
     props: {
       showMsg: {

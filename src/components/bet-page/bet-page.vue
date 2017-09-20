@@ -13,21 +13,21 @@
         </div>
         <div class="content-mid">
           <div class="mid-l">
-            <div class="item" @click="selectedType($event,'bd','3')">
+            <div class="item bigDouble" @click="(cutDownTime>9)&&selectedType($event,'bd','3')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
-            <div class="item" @click="selectedType($event,'b','2')">
+            <div class="item big" @click="(cutDownTime>9)&&selectedType($event,'b','2')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
-            <div class="item" @click="selectedType($event,'d','2')">
+            <div class="item double" @click="(cutDownTime>9)&&selectedType($event,'d','2')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
-            <div class="item" @click="selectedType($event,'bs','4')">
+            <div class="item bigSingle" @click="(cutDownTime>9)&&selectedType($event,'bs','4')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
           </div>
           <div class="mid-m">
-            <div class="item" @click="selectedType($event,'sss','60')">
+            <div class="item same" @click="(cutDownTime>9)&&selectedType($event,'sss','60')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
             <div class="item">
@@ -49,15 +49,15 @@
                   <p>55225525</p>
                 </div>
                 <div class="list num">
-                  <span ref="num1">5</span>
-                  <span ref="num2">+</span>
-                  <span ref="num3">8</span>
-                  <span ref="num4">+</span>
-                  <span ref="num5">2</span>
-                  <span ref="num6">=</span>
+                  <span ref="num1" class="numbers">{{winResult[0]}}</span>
+                  <span ref="num2" class="numbers">+</span>
+                  <span ref="num3" class="numbers">{{winResult[1]}}</span>
+                  <span ref="num4" class="numbers">+</span>
+                  <span ref="num5" class="numbers">{{winResult[2]}}</span>
+                  <span ref="num6" class="numbers">=</span>
                 </div>
-                <div ref="sum" class="sum">
-                  15
+                <div ref="sum" class="sum numbers">
+                  {{Number(winResult[0]) + Number(winResult[1]) + Number(winResult[2])}}
                 </div>
               </div>
               <div class="bot">
@@ -68,21 +68,21 @@
                 <div class="history-list">12</div>
               </div>
             </div>
-            <div class="item" @click="selectedType($event,'abc','60')">
+            <div class="item order" @click="(cutDownTime>9)&&selectedType($event,'abc','60')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
           </div>
           <div class="mid-r">
-            <div class="item" @click="selectedType($event,'ls','3')">
+            <div class="item smallSingle" @click="(cutDownTime>9)&&selectedType($event,'ls','3')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
-            <div class="item" @click="selectedType($event,'l','2')">
+            <div class="item small" @click="(cutDownTime>9)&&selectedType($event,'l','2')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
-            <div class="item" @click="selectedType($event,'s','2')">
+            <div class="item single" @click="(cutDownTime>9)&&selectedType($event,'s','2')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
-            <div class="item" @click="selectedType($event,'ld','4')">
+            <div class="item smallDouble" @click="(cutDownTime>9)&&selectedType($event,'ld','4')">
               <div class="item-flow" ref="itemFlow"></div>
             </div>
           </div>
@@ -114,6 +114,7 @@
 </template>
 
 <script type="text/ecmascript-6">
+  import jsonp from 'jsonp'
   import JustTips from 'components/just-tips/just-tips'
   import SelectResult from 'components/select-result/select-result'
   import BetAccount from 'components/bet-account/bet-account'
@@ -144,9 +145,11 @@
         FFbg: '',
         betMsg: [],
         showMsg: null,
-        cutDownTime: '',
+        cutDownTime: 15,
         cutPeriod: true,
-        openPeriod: false
+        openPeriod: false,
+        timer1: '',
+        winResult: [9, 9, 1]
       }
     },
     methods: {
@@ -242,7 +245,6 @@
       resetBet() {
         const obj = document.getElementsByClassName('item-flow')
         const list = document.getElementsByClassName('numItem')
-        console.log(list)
         for (const value of obj) {
           value.style.display = 'none'
         }
@@ -254,13 +256,7 @@
         this.showMsg = ''
         this.numberType = ''
       },
-      cutTimeDown() {
-        if (this.cutDownTime === 0) {
-          this.$refs.openState.innerText = '开奖中'
-          this.rate(this.$refs.cutP)
-          return
-        }
-        this.cutDownTime--
+      cutTimeAnimation() {
         const animation = {
           0: {
             transform: `scale(3)`
@@ -281,14 +277,9 @@
             resetWhenDone: true
           }
         })
-        if (this.cutDownTime < 10 && this.cutDownTime >= 0) {
-          this.$refs.openState.innerText = '等待开奖'
-          animations.runAnimation(this.$refs.sencondTime, 'move')
-          this.$refs.sencondTime.style.color = 'red'
-        }
-
+        animations.runAnimation(this.$refs.sencondTime, 'move')
       },
-      rate(obj) {
+      cutPageAnimation(obj) {
         const animation = {
           0: {
             transform: `rotateY(0deg)`
@@ -306,7 +297,7 @@
           presets: {
             duration: 400,
             easing: 'linear',
-            resetWhenDone: true
+            resetWhenDone: false
           }
         })
         const _this = this
@@ -314,6 +305,47 @@
           _this.cutPeriod = false
           _this.openPeriod = true
           _this.moveNumb()
+          _this.$refs.cutP.style.animation = ''
+        })
+      },
+      openPageAnimation(obj) {
+        const animation = {
+          0: {
+            transform: `rotateY(0deg)`
+          },
+          50: {
+            transform: `rotateY(45deg)`
+          },
+          100: {
+            transform: `rotateY(90deg)`
+          }
+        }
+        animations.registerAnimation({
+          name: 'rate',
+          animation,
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: false
+          }
+        })
+        const _this = this
+        animations.runAnimation(obj, 'rate', function () {
+          setTimeout(() => {
+            _this.cutPeriod = true
+            _this.openPeriod = false
+            //重置定时器
+            const list = document.getElementsByClassName('numbers')
+            for (var value of list) {
+              value.style.visibility = 'hidden'
+            }
+            _this.$refs.sencondTime.style.color = 'white'
+            _this.cutDownTime = 15
+            _this.timer1 = setInterval(() => {
+              _this.cutDownTime--
+            }, 1000)
+            obj.style.animation = ''
+          }, 100)
         })
       },
       moveNumb() {
@@ -323,7 +355,10 @@
           name: 'rate',
           animation: {
             0: {
-              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(0deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+            },
+            50: {
+              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
             },
             100: {
               transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
@@ -349,7 +384,10 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+            },
+            50: {
+              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
             },
             100: {
               transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
@@ -374,7 +412,10 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+            },
+            50: {
+              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
             },
             100: {
               transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
@@ -399,7 +440,10 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+            },
+            50: {
+              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
             },
             100: {
               transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
@@ -424,7 +468,10 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+            },
+            50: {
+              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
             },
             100: {
               transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
@@ -449,7 +496,10 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2.2rem,-3rem,0) scale(4) rotateX(0deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+            },
+            50: {
+              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
             },
             100: {
               transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
@@ -463,13 +513,13 @@
         })
         const _this = this
         animations.runAnimation(num6, 'rate2', function () {
-          _this.$refs.sum.style.display = 'block'
+          _this.$refs.sum.style.visibility = 'visible'
           _this.sumAnimation()
         })
       },
       sumAnimation() {
         animations.registerAnimation({
-          name: 'rates',
+          name: 'ratesum',
           animation: {
             0: {
               transform: `scale(2)`
@@ -491,49 +541,104 @@
           }
         })
         const _this = this
-        animations.runAnimation(_this.$refs.sum, 'rates', function () {
-          const animation = {
-            0: {
-              transform: `rotateY(0deg)`
-            },
-            50: {
-              transform: `rotateY(45deg)`
-            },
-            100: {
-              transform: `rotateY(90deg)`
-            }
-          }
-          animations.registerAnimation({
-            name: 'rate',
-            animation,
-            presets: {
-              duration: 400,
-              easing: 'linear',
-              resetWhenDone: true
-            }
-          })
-          _this.cutDownTime = 15
-          animations.runAnimation(_this.$refs.openP, 'rate', function () {
-            _this.cutPeriod = true
-            _this.openPeriod = false
-          })
+        animations.runAnimation(_this.$refs.sum, 'ratesum', function () {
+          _this.showWinResultBorder()
         })
       },
+      showWinResultBorder() {
+        const resultSum = this.winResult[0] + this.winResult[1] + this.winResult[2]
+        const border = '2px solid white'
+        this.setBorder(resultSum, border)
+        setTimeout(() => {
+          const border = '2px solid #30C37C'
+          this.setBorder(resultSum, border)
+        }, 500)
+        setTimeout(() => {
+          const border = '2px solid white'
+          this.setBorder(resultSum, border)
+        }, 1000)
+        setTimeout(() => {
+          const border = '2px solid #30C37C'
+          this.setBorder(resultSum, border)
+        }, 1500)
+        setTimeout(() => {
+          const border = ''
+          this.setBorder(resultSum, border)
+        }, 2000)
+         setTimeout(()=>{
+           this.openPageAnimation(this.$refs.openP)
+         },2000)
+        setTimeout(()=>{
+          this.resetBet()
+        },2000)
+
+      },
+      setBorder(resultSum, border) {
+        if (resultSum % 2 === 0) {
+          document.getElementsByClassName('double')[0].style.border = border
+          if (resultSum < 13) {
+            document.getElementsByClassName('smallDouble')[0].style.border = border
+            document.getElementsByClassName('small')[0].style.border = border
+          } else {
+            document.getElementsByClassName('bigDouble')[0].style.border = border
+            document.getElementsByClassName('big')[0].style.border = border
+          }
+        } else {
+          document.getElementsByClassName('single')[0].style.border = border
+          if (resultSum <= 13) {
+            document.getElementsByClassName('smallSingle')[0].style.border = border
+            document.getElementsByClassName('small')[0].style.border = border
+          } else {
+            document.getElementsByClassName('bigSingle')[0].style.border = border
+            document.getElementsByClassName('big')[0].style.border = border
+          }
+
+        }
+      }
 
     }
-    ,
-    mounted() {
-      this.cutDownTime = 15
-      setInterval(this.cutTimeDown, 1000)
+      ,
+      created() {
+        this.timer1 = setInterval(() => {
+          this.cutDownTime--
+        }, 1000)
+        /*jsonp('http://192.168.0.214:8080/fast/listUser/', {"callback": "cb"}, function (err, data) {
+          if (err) {
+            console.error(err.message);
+          } else {
+            console.log(data);
+          }
+        });*/
+      }
+      ,
+      watch: {
+        cutDownTime(newValue) {
+          if (0 < newValue && newValue < 10) {
+            this.cutTimeAnimation()
+            this.$refs.openState.innerText = '等待开奖'
+            this.$refs.sencondTime.style.color = 'red'
+          } else if (newValue === 0) {
+            this.$refs.openState.innerText = '开奖中'
+            const _this = this
+            _this.cutPageAnimation(_this.$refs.cutP)
+          } else if (newValue < 0) {
+            clearInterval(this.timer1)
+          }
+
+        }
+      },
+      beforeDestroy() {
+        clearInterval(this.timer1)
+      },
+
+
+      components: {
+        JustTips,
+        SelectResult,
+        BetAccount,
+        MarqueeData
+      }
     }
-    ,
-    components: {
-      JustTips,
-      SelectResult,
-      BetAccount,
-      MarqueeData
-    }
-  }
 </script>
 
 <style scoped lang="stylus" rel="stylesheet/stylus">
@@ -702,7 +807,7 @@
                 color white
                 font-weight 800
                 font-size 2rem
-                display none
+                visibility hidden
             .bot
               height 12%
               display flex
