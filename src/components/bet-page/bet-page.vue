@@ -3,13 +3,13 @@
     <div class='bet-page'>
       <div class="bet-content">
         <div class="content-top">
-          <div class="item-left">玩法介绍</div>
+          <div class="item-left" @click="showExplain">玩法介绍</div>
           <div class="item-mid">
             <Marquee :duration="600" :interval="2000">
               <marquee-data></marquee-data>
             </Marquee>
           </div>
-          <div class="item-right">走势图</div>
+          <div class="item-right" @click="showTrendChart">走势图</div>
         </div>
         <div class="content-mid">
           <div class="mid-l">
@@ -109,6 +109,12 @@
       <div class="bet-account">
         <bet-account></bet-account>
       </div>
+     <div v-show="trendChart">
+       <trend-chart class="boxContent" v-on:closeTrendChart="closeTrendChart" ></trend-chart>
+     </div>
+      <div v-show="explainChart">
+        <play-explain class="explainChart" v-on:closeExplainChart="closeExplainChart"></play-explain>
+      </div>
     </div>
   </transition>
 </template>
@@ -119,6 +125,8 @@
   import SelectResult from 'components/select-result/select-result'
   import BetAccount from 'components/bet-account/bet-account'
   import MarqueeData from 'base/marquee-data/marquee-data'
+  import TrendChart from 'components/trend-chart/trend-chart'
+  import PlayExplain from 'components/play-explain/play-explain'
   import animations from 'create-keyframe-animation'
   import bg0 from 'components/bet-page/img/chip-1.png'
   import bg1 from 'components/bet-page/img/chip-2.png'
@@ -126,7 +134,9 @@
   import bgF0 from 'components/bet-page/img/chip-1-L.png'
   import bgF1 from 'components/bet-page/img/chip-2-L.png'
   import bgF2 from 'components/bet-page/img/chip-3-L.png'
+  import {prefixStyle} from 'common/js/dom'
 
+  const transform = prefixStyle('transform')
   export default {
     data() {
       return {
@@ -145,11 +155,13 @@
         FFbg: '',
         betMsg: [],
         showMsg: null,
-        cutDownTime: 15,
+        cutDownTime: 11,
         cutPeriod: true,
         openPeriod: false,
         timer1: '',
-        winResult: [9, 9, 1]
+        winResult: [9, 9, 1],
+        trendChart:false,
+        explainChart:false
       }
     },
     methods: {
@@ -228,7 +240,7 @@
         el.style.backgroundSize = 'contain'
         el.style.backgroundPosition = 'center'
         el.style.backgroundRepeat = 'no-repeat'
-        el.style.zIndex = '999'
+        el.style.zIndex = '10'
         el.style.display = 'block'
         el.setAttribute('id', 'clone')
       },
@@ -282,13 +294,13 @@
       cutPageAnimation(obj) {
         const animation = {
           0: {
-            transform: `rotateY(0deg)`
+            transform: 'rotateY(0deg)'
           },
           50: {
-            transform: `rotateY(45deg)`
+            transform: 'rotateY(45deg)'
           },
           100: {
-            transform: `rotateY(90deg)`
+            transform: 'rotateY(90deg)'
           }
         }
         animations.registerAnimation({
@@ -306,18 +318,19 @@
           _this.openPeriod = true
           _this.moveNumb()
           _this.$refs.cutP.style.animation = ''
+          _this.$refs.cutP.style[transform] = ''
         })
       },
       openPageAnimation(obj) {
         const animation = {
           0: {
-            transform: `rotateY(0deg)`
+            transform: 'rotateY(0deg)'
           },
           50: {
-            transform: `rotateY(45deg)`
+            transform: 'rotateY(45deg)'
           },
           100: {
-            transform: `rotateY(90deg)`
+            transform: 'rotateY(90deg)'
           }
         }
         animations.registerAnimation({
@@ -345,6 +358,7 @@
               _this.cutDownTime--
             }, 1000)
             obj.style.animation = ''
+            obj.style[transform] = ''
           }, 100)
         })
       },
@@ -355,13 +369,13 @@
           name: 'rate',
           animation: {
             0: {
-              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) `
             },
             50: {
-              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
+              transform: `translate3d(-1rem,-3rem,0) scale(4) `
             },
             100: {
-              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+              transform: `translate3d(0px,0px,0) scale(1) `
             }
           },
           presets: {
@@ -375,6 +389,9 @@
         animations.runAnimation(num1, 'rate', function () {
           num2.style.visibility = 'visible'
           _this.moveNumb2()
+          obj[0].style.animation = ''
+          obj[0].style.transform = ''
+          animations.unregisterAnimation('move')
         })
       },
       moveNumb2() {
@@ -384,13 +401,13 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) `
             },
             50: {
-              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
+              transform: `translate3d(-1rem,-3rem,0) scale(4) `
             },
             100: {
-              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+              transform: `translate3d(0px,0px,0) scale(1) `
             }
           },
           presets: {
@@ -412,13 +429,13 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) `
             },
             50: {
-              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
+              transform: `translate3d(-1rem,-3rem,0) scale(4) `
             },
             100: {
-              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+              transform: `translate3d(0px,0px,0) scale(1)`
             }
           },
           presets: {
@@ -440,13 +457,13 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) `
             },
             50: {
-              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
+              transform: `translate3d(-1rem,-3rem,0) scale(4) `
             },
             100: {
-              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+              transform: `translate3d(0px,0px,0) scale(1) `
             }
           },
           presets: {
@@ -468,13 +485,13 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4) `
             },
             50: {
-              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
+              transform: `translate3d(-1rem,-3rem,0) scale(4) `
             },
             100: {
-              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+              transform: `translate3d(0px,0px,0) scale(1) `
             }
           },
           presets: {
@@ -496,13 +513,13 @@
           name: 'rate2',
           animation: {
             0: {
-              transform: `translate3d(-2rem,-4rem,0) scale(4) rotateX(90deg)`
+              transform: `translate3d(-2rem,-4rem,0) scale(4)`
             },
             50: {
-              transform: `translate3d(-1rem,-3rem,0) scale(4) rotateX(45deg)`
+              transform: `translate3d(-1rem,-3rem,0) scale(4)`
             },
             100: {
-              transform: `translate3d(0px,0px,0) scale(1) rotateX(0deg)`
+              transform: `translate3d(0px,0px,0) scale(1)`
             }
           },
           presets: {
@@ -549,27 +566,32 @@
         const resultSum = this.winResult[0] + this.winResult[1] + this.winResult[2]
         const border = '2px solid white'
         this.setBorder(resultSum, border)
-        setTimeout(() => {
+       const ST1=setTimeout(() => {
           const border = '2px solid #30C37C'
           this.setBorder(resultSum, border)
         }, 500)
-        setTimeout(() => {
+        const ST2= setTimeout(() => {
           const border = '2px solid white'
           this.setBorder(resultSum, border)
+          clearTimeout(ST1)
         }, 1000)
-        setTimeout(() => {
+        const ST3= setTimeout(() => {
           const border = '2px solid #30C37C'
           this.setBorder(resultSum, border)
+          clearTimeout(ST2)
         }, 1500)
-        setTimeout(() => {
+        const ST4= setTimeout(() => {
           const border = ''
           this.setBorder(resultSum, border)
+          clearTimeout(ST3)
         }, 2000)
-         setTimeout(()=>{
+        const ST5=  setTimeout(()=>{
            this.openPageAnimation(this.$refs.openP)
+          clearTimeout(ST4)
          },2000)
-        setTimeout(()=>{
+        const ST6= setTimeout(()=>{
           this.resetBet()
+          clearTimeout(ST5)
         },2000)
 
       },
@@ -594,6 +616,92 @@
           }
 
         }
+      },
+      showTrendChart(e){
+        const trendChart = document.getElementsByClassName('boxContent')
+        this.trendChart = true
+        this.showBox(trendChart)
+      },
+      showExplain(){
+        const explainChart = document.getElementsByClassName('explainChart')
+        this.explainChart = true
+        this.showBox(explainChart)
+      },
+      showBox(obj) {
+        animations.registerAnimation({
+          name: 'move',
+          animation: {
+            0: {
+              transform: `scale(0.5)`
+            },
+            25: {
+              transform: `scale(0.7)`
+            },
+            50: {
+              transform: `scale(1.03)`
+            },
+            75: {
+              transform: `scale(1.05)`
+            },
+            100: {
+              transform: `scale(1)`
+            }
+          },
+          presets: {
+            duration: 800,
+            easing: 'linear',
+            resetWhenDone: false
+          }
+        })
+        animations.runAnimation(obj, 'move',function () {
+          obj[0].style.animation = ''
+          obj[0].style.transform = ''
+          animations.unregisterAnimation('move')
+        })
+      },
+      closeBox(obj) {
+        animations.registerAnimation({
+          name: 'move',
+          animation: {
+            0: {
+              transform: `scale(1)`
+            },
+            25: {
+              transform: `scale(0.7)`
+            },
+            50: {
+              transform: `scale(0.5)`
+            },
+            75: {
+              transform: `scale(0.3)`
+            },
+            100: {
+              transform: `scale(0)`
+            }
+          },
+          presets: {
+            duration: 400,
+            easing: 'linear',
+            resetWhenDone: false
+          }
+        })
+        const _this = this
+        animations.runAnimation(obj, 'move',function () {
+          obj[0].style.animation = ''
+          obj[0].style.transform = ''
+          animations.unregisterAnimation('move')
+          _this.trendChart = false
+          _this.explainChart = false
+
+        })
+      },
+      closeTrendChart(){
+        const box = document.getElementsByClassName('boxContent')
+        this.closeBox(box)
+      },
+      closeExplainChart(){
+        const box = document.getElementsByClassName('explainChart')
+        this.closeBox(box)
       }
 
     }
@@ -636,7 +744,9 @@
         JustTips,
         SelectResult,
         BetAccount,
-        MarqueeData
+        MarqueeData,
+        TrendChart,
+        PlayExplain,
       }
     }
 </script>
